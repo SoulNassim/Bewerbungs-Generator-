@@ -16,13 +16,6 @@
 
 ---
 
-## 🖥️ Screenshot
-
-<!-- Add a screenshot of the app here -->
-> Run the app and take a screenshot to showcase the UI!
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
