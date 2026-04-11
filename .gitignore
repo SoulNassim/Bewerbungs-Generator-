@@ -1,0 +1,34 @@
+# Environment variables (API keys!)
+.env
+
+# User profiles (personal data)
+profiles/
+
+# Generated output files
+*.pdf
+*.txt
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Build / distribution
+build/
+dist/
+*.spec
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db
