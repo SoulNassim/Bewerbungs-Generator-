@@ -14,7 +14,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.enums import TA_RIGHT, TA_LEFT
 from PyPDF2 import PdfReader
 
-# Lädt Umgebungsvariablen aus der .env-Datei
+# .env datei laden damit der api key funktioniert
 load_dotenv()
 
 PROFILE_DIR = "profiles"
@@ -24,7 +24,7 @@ class ApplicationGenerator(tb.Window):
         super().__init__(themename="superhero")
         self.title("Bewerbungsgenerator Pro")
         
-        # --- Instanzvariablen ---
+        # hier speichere ich alle felder die ich später brauche
         self.profile_var = tk.StringVar()
         self.eigener_name_var = tk.StringVar()
         self.eigene_strasse_var = tk.StringVar()
@@ -51,7 +51,7 @@ class ApplicationGenerator(tb.Window):
         main_frame = tb.Frame(self, padding="10")
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
-        # UI Elemente
+        # jetzt kommen die ganzen buttons und felder
         tb.Label(main_frame, text="Profil:").grid(row=0, column=0, sticky="w", pady=5)
         self.profile_menu = tb.OptionMenu(main_frame, self.profile_var, "Profil auswählen...", *[], command=self.load_profile)
         self.profile_menu.grid(row=0, column=1, sticky="ew", pady=5, padx=5)
@@ -250,7 +250,7 @@ class ApplicationGenerator(tb.Window):
         custom_style = self.style_prompt_var.get()
         gpt_text = self.generate_gpt_text(job_titel, firmenname, custom_style, cv_content)
         
-        if gpt_text is None: # Sicherheitsabfrage, falls gpt_text None zurückgibt
+        if gpt_text is None: # falls irgendwas schiefgelaufen ist
             messagebox.showerror("Fehler", "Die KI konnte keinen Text generieren.")
             return
 
