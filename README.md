@@ -113,14 +113,19 @@ The whole thing is about 2500 lines of code total.
 
 ---
 
+## Screenshots
+
+**Landing Page (Firma Tab with Generated Cover Letter)**
+
+Left side: Form fields for company name, job title, contact person  
+Right side: Live A4 preview showing the generated cover letter  
+Bottom: Download and Copy buttons
+
+The cover letter is fully editable - click anywhere to make changes before downloading.
+
+---
+
 ## 📖 How to Use
-
-### 1️⃣ Enter Your Profile
-- Go to **Profil** tab
-- Fill in personal details
-- **Optional**: Save as profile for reuse
-
-## How to Use
 
 1. Fill Profil tab
 2. Fill Firma tab 
