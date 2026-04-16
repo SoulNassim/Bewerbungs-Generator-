@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applify - KI Bewerbungsgenerator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fb;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 16px 30px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            display: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            grid-template-rows: 1fr;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+            align-items: stretch;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: slideUp 0.6s ease-out;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .card:first-child {
+            overflow-y: auto;
+        }
+
+        .card:last-child {
+            overflow: hidden;
+        }
+
+        #previewContent {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-height: 0;
+            padding: 0;
+        }
+
+        /* A4 Live HTML Preview */
+        .a4-wrapper {
+            flex: 1;
+            background: #e5e7eb;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .a4-preview {
+            background: white;
+            width: 210mm;
+            min-height: 297mm;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 25mm !important;
+            box-sizing: border-box;
+            color: #000;
+            line-height: 1.5;
+            font-size: 11pt;
+            /* Scale on smaller screens slightly, though overflow auto handles it */
+        }
+        
+        @media (max-width: 1400px) {
+            .a4-preview {
+                transform-origin: top center;
+                transform: scale(0.85); /* Slightly scaled down on normal laptops */
+                margin-bottom: -15%; /* Fix bounding box */
+            }
+        }
+
+        .a4-preview.font-helvetica { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+        .a4-preview.font-times { font-family: 'Times New Roman', Times, serif; }
+        .a4-preview.font-courier { font-family: 'Courier New', Courier, monospace; }
+
+        .a4-header { width: 100%; margin-bottom: 30px; }
+        .a4-recipient { width: 100%; margin-bottom: 30px; }
+        .a4-date { text-align: right; margin-bottom: 20px; }
+        .a4-subject { font-weight: bold; margin-bottom: 20px; }
+        
+        .a4-body {
+            width: 100%;
+            outline: none;
+            min-height: 150mm;
+            white-space: pre-wrap;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .a4-header:focus, .a4-recipient:focus, .a4-date:focus, .a4-subject:focus, .a4-footer:focus {
+            background: #f8fafc;
+            border-radius: 4px;
+            box-shadow: inset 0 0 0 2px rgba(102, 126, 234, 0.2);
+            outline: none;
+        }
+        
+        .a4-footer { margin-top: 10px; }
+        .a4-separator { height: 1px; background: #000; margin: 15px 0; }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 15px 8px 15px;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            padding: 0 12px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .file-input-label:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .file-input-label.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+            flex-shrink: 0;
+            min-height: 32px;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 8px 40px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.05em;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+            animation: glowPulse 2s ease-in-out;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f5f7fb 0%, #f0f2f8 100%);
+            color: #333;
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 0.85em;
+            padding: 10px 16px;
+            border: 1.5px solid #e0e0e0;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #e8ecf5 0%, #e0e5f0 100%);
+            border-color: #667eea;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .profile-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select.profile-select {
+            flex: 1;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.8em;
+            width: auto;
+            min-height: 36px;
+        }
+
+        .preview-card {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .preview-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .preview-text {
+            color: #666;
+            line-height: 1.6;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stats {
+            display: none;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .stat-box .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-box .label {
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: nowrap;
+            padding: 0;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 8px 6px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            color: #999;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.78em;
+            min-width: 0;
+            white-space: nowrap;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Applify</h1>
+            <p>Erstelle professionelle Bewerbungen mit KI-Unterstützung</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="number" id="profileCount">0</div>
+                <div class="label">Profile gespeichert</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="generatedCount">0</div>
+                <div class="label">Bewerbungen generiert</div>
+            </div>
+            <div class="stat-box">
+                <div class="number">⚡</div>
+                <div class="label">KI-Powered</div>
+            </div>
+        </div>
+
+        <div class="alert" id="alert"></div>
+
+        <div class="main-content">
+            <!-- Left Column: Input Form -->
+            <div class="card">
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('personal-tab')">Profil</div>
+                    <div class="tab" onclick="switchTab('company-tab')">Firma</div>
+                    <div class="tab" onclick="switchTab('settings-tab')">Optionen</div>
+                    <div class="tab" onclick="switchTab('tools-tab')">Tools</div>
+                    <div class="tab" onclick="switchTab('debug-tab')">Debug</div>
+                </div>
+
+                <!-- Personal Tab -->
+                <div id="personal-tab" class="tab-content active">
+                    <div class="profile-selector">
+                        <select id="profileSelect" class="profile-select" onchange="loadProfile()" style="font-size: 0.8em; padding: 4px;">
+                            <option value="">Profil</option>
+                        </select>
+                        <button class="btn-secondary btn-small" onclick="newProfile()" style="font-size: 0.7em; padding: 4px 8px;">+</button>
+                        <button class="btn-secondary btn-small" onclick="deleteProfile()" style="font-size: 0.7em; padding: 4px 8px;">−</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Vollständiger Name *</label>
+                        <input type="text" id="name" placeholder="z.B. John Doe">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="street">Straße *</label>
+                            <input type="text" id="street" placeholder="z.B. 123 Main Street">
+                        </div>
+                        <div class="form-group">
+                            <label for="city">Stadt / PLZ *</label>
+                            <input type="text" id="city" placeholder="z.B. 10115 Berlin">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">E-Mail *</label>
+                            <input type="email" id="email" placeholder="z.B. name@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefon *</label>
+                            <input type="tel" id="phone" placeholder="z.B. +49 152 123456">
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="saveProfile()" style="font-size: 0.75em; padding: 6px 10px;">💾</button>
+                </div>
+
+                <!-- Company Tab -->
+                <div id="company-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="company">Unternehmensname *</label>
+                        <input type="text" id="company" placeholder="z.B. Google Deutschland">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jobTitle">Jobtitel *</label>
+                        <input type="text" id="jobTitle" placeholder="z.B. Software Engineer">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact">Ansprechpartner</label>
+                        <input type="text" id="contact" placeholder="z.B. Herr Max Mustermann">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="companyStreet">Straße des Unternehmens</label>
+                            <input type="text" id="companyStreet" placeholder="z.B. Poststraße 13">
+                        </div>
+                        <div class="form-group">
+                            <label for="companyCity">Stadt / PLZ des Unternehmens</label>
+                            <input type="text" id="companyCity" placeholder="z.B. 58099 Hagen">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="source">Wie hast du die Stelle gefunden?</label>
+                        <input type="text" id="source" placeholder="z.B. Linkedin, Karriereseite, Freund">
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="form-group">
+                        <label for="stylePrompt">KI-Schreibstil</label>
+                        <textarea id="stylePrompt" placeholder="z.B. Schreibe professionell, freundlich und überzeugend. Verwende Beispiele aus meiner Erfahrung.">Schreibe professionell und überzeugend.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Lebenslauf hochladen (PDF/TXT)</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="cvFile" accept=".pdf,.txt">
+                            <label for="cvFile" class="file-input-label" id="cvLabel">📎 Lebenslauf wählen oder hier ablegen</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Unterschrift hochladen (optional)</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="signatureFile" accept=".png,.jpg,.jpeg">
+                            <label for="signatureFile" class="file-input-label" id="signatureLabel">✍️ Unterschrift wählen oder hier ablegen</label>
+                        </div>
+                        <div id="sigControls" style="display:none; margin-top: 10px; padding: 10px; background: #f8fafc; border-radius: 8px;">
+                            <label style="font-size: 0.85em; display: flex; justify-content: space-between; margin-bottom:5px;">Größe: <span id="sigScaleVal">100%</span></label>
+                            <input type="range" id="sigScale" min="0.3" max="2.5" step="0.1" value="1" style="width:100%; margin-bottom: 15px;">
+                            
+                            <label style="font-size: 0.85em; display: flex; justify-content: space-between; margin-bottom:5px;">Nach rechts verschieben: <span id="sigIndentVal">0px</span></label>
+                            <input type="range" id="sigIndent" min="0" max="150" step="1" value="0" style="width:100%;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tools Tab -->
+                <div id="tools-tab" class="tab-content">
+                    <div style="background: #eef2ff; color: #4f46e5; padding: 12px; border-radius: 8px; font-size: 0.9em; margin-bottom: 20px;">
+                        💡 <strong>Live Editor:</strong> Klicke einfach rechts in das weiße Dokument, um den Text direkt zu bearbeiten.
+                    </div>
+
+                    <div class="form-group">
+                        <label for="layoutSelectLeft">📋 Layout</label>
+                        <select id="layoutSelectLeft" onchange="changeLayout(this.value)" style="width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 0.9em; cursor: pointer;">
+                            <option value="classic">Klassisch</option>
+                            <option value="modern">Modern</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="compact">Kompakt</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fontSelectLeft">🔤 Schriftart</label>
+                        <select id="fontSelectLeft" onchange="changeFont(this.value)" style="width: 100%; padding: 10px 12px; border: 1.5px solid #e0e0e0; border-radius: 10px; font-size: 0.9em; cursor: pointer;">
+                            <option value="Helvetica" style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">Helvetica</option>
+                            <option value="Times" style="font-family: 'Times New Roman', Times, serif;">Times New Roman</option>
+                            <option value="Courier" style="font-family: 'Courier New', Courier, monospace;">Courier</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Debug Tab -->
+                <div id="debug-tab" class="tab-content">
+                    <div style="background: #ffe0e0; border: 2px solid #ff6b6b; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <strong style="color: #ff6b6b;">Debug Modus</strong>
+                        <p style="margin-top: 10px; color: #666; font-size: 0.9em;">Diese Buttons füllen das Formular mit Test-Daten zum Debuggen.</p>
+                    </div>
+
+                    <button class="btn-secondary" onclick="fillDebugData()">📝 Mit Test-Daten ausfüllen</button>
+                    <button class="btn-secondary" onclick="createDummyCV()">📄 Muster-Lebenslauf erstellen</button>
+                    <button class="btn-secondary" onclick="logDebugInfo()">🔍 Debug-Infos anzeigen (F12 Console)</button>
+                    <button class="btn-secondary" onclick="testAPIConnection()">🔗 API-Verbindung testen</button>
+                    <button class="btn-secondary" onclick="generatePDFLocal()" style="background: #10b981; color: white; margin-top: 10px;">✅ Lokale PDF generieren (KEIN API)</button>
+
+                    <div style="margin-top: 20px; background: #f5f5f5; padding: 15px; border-radius: 8px; display: none;" id="debugOutput">
+                        <strong>Debug Output:</strong>
+                        <pre id="debugLog" style="font-size: 0.8em; max-height: 200px; overflow-y: auto; background: white; padding: 10px; border-radius: 4px; margin-top: 10px;"></pre>
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="generateApplication()" style="margin-top: 20px;">
+                    ✨ Bewerbung generieren
+                </button>
+            </div>
+
+            <!-- Right Column: Hero / Preview -->
+            <div id="heroSection" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
+                <h2 style="font-size: 2.2em; margin-bottom: 15px; font-weight: 700;">✨ Deine perfekte Bewerbung</h2>
+                <p style="font-size: 1.1em; margin-bottom: 30px; opacity: 0.95; line-height: 1.6;">Lass die KI eine individuelle Bewerbung für dich schreiben.<br>Personalisiert, professionell und überzeugend.</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; margin-top: 30px;">
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">⚡</div>
+                        <h3 style="margin-bottom: 8px; font-weight: 600;">Blitzschnell</h3>
+                        <p style="font-size: 0.9em; opacity: 0.9;">Deine Bewerbung in unter 2 Minuten</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🤖</div>
+                        <h3 style="margin-bottom: 8px; font-weight: 600;">KI-Powered</h3>
+                        <p style="font-size: 0.9em; opacity: 0.9;">GPT-3.5 für perfekten Text</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">📋</div>
+                        <h3 style="margin-bottom: 8px; font-weight: 600;">Profi-Design</h3>
+                        <p style="font-size: 0.9em; opacity: 0.9;">4 verschiedene Layouts</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 2em; margin-bottom: 10px;">🔒</div>
+                        <h3 style="margin-bottom: 8px; font-weight: 600;">Privat & Sicher</h3>
+                        <p style="font-size: 0.9em; opacity: 0.9;">Keine Datenspeicherung</p>
+                    </div>
+                </div>
+                
+                <p style="margin-top: 30px; font-size: 0.95em; opacity: 0.85;">← Füllen Sie das Formular aus und klicken Sie auf "Bewerbung generieren"</p>
+            </div>
+
+            <!-- Right Column: Preview -->
+            <div class="card" id="previewCard" style="display: none;">
+                <h2>📄 Vorschau</h2>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>KI generiert deine Bewerbung...</p>
+                </div>
+
+                <div id="previewContent" style="display: none; display: flex; flex-direction: column; flex: 1;">
+                    <div class="a4-wrapper">
+                        <div id="htmlA4Document" class="a4-preview font-helvetica">
+                            <div id="htmlA4Header" class="a4-header" contenteditable="true" spellcheck="false"></div>
+                            <div id="htmlA4Recipient" class="a4-recipient" contenteditable="true" spellcheck="false"></div>
+                            <div id="htmlA4Date" class="a4-date" contenteditable="true" spellcheck="false"></div>
+                            <div id="htmlA4Subject" class="a4-subject" contenteditable="true" spellcheck="false">Bewerbung</div>
+                            <div id="htmlA4Body" class="a4-body" contenteditable="true" spellcheck="false"></div>
+                            <div id="htmlA4Footer" class="a4-footer" contenteditable="true" spellcheck="false">
+                                <div id="htmlA4Greeting">Mit freundlichen Grüßen,</div>
+                                <div style="margin-top: 15px;" id="htmlA4SignatureName"></div>
+                                <img id="htmlA4SignatureImg" style="display:none; max-height: 40px; margin-top: 5px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+                        <button class="btn-primary" onclick="downloadPDF()" style="margin: 0; padding: 10px; font-size: 0.9em;">
+                            📥 Download
+                        </button>
+
+                        <button class="btn-secondary" onclick="copyToClipboard()" style="margin: 0; padding: 10px; font-size: 0.9em;">
+                            📋 Kopieren
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentCoverLetter = '';
+        let currentCVText = '';
+        let generatedCount = parseInt(localStorage.getItem('generatedCount') || '0');
+        let currentLayout = 'classic';
+        let currentFont = 'Helvetica';
+        let currentPdfUrl = null;
+        let currentSignatureBase64 = null;
+
+        document.getElementById('cvFile').addEventListener('change', handleCVUpload);
+        document.getElementById('signatureFile').addEventListener('change', handleSignatureUpload);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfiles();
+            const scaleSlider = document.getElementById('sigScale');
+            const indentSlider = document.getElementById('sigIndent');
+            
+            if(scaleSlider) {
+                scaleSlider.addEventListener('input', function(e) {
+                    const img = document.getElementById('htmlA4SignatureImg');
+                    if(img) img.style.transform = `scale(${e.target.value})`;
+                    document.getElementById('sigScaleVal').textContent = Math.round(e.target.value * 100) + '%';
+                });
+            }
+            if(indentSlider) {
+                indentSlider.addEventListener('input', function(e) {
+                    const img = document.getElementById('htmlA4SignatureImg');
+                    if(img) img.style.marginLeft = `${e.target.value}px`;
+                    document.getElementById('sigIndentVal').textContent = `${e.target.value}px`;
+                });
+            }
+        });
+
+        async function handleCVUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('cvLabel').textContent = '⏳ Lese Textauslese...';
+            try {
+                if (file.name.toLowerCase().endsWith('.pdf')) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    const response = await fetch('/api/extract-cv', { method: 'POST', body: formData });
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    currentCVText = data.cv_text;
+                } else if (file.name.toLowerCase().endsWith('.txt')) {
+                    currentCVText = await file.text();
+                } else {
+                    throw new Error("Nur PDF oder TXT erlaubt");
+                }
+                document.getElementById('cvLabel').textContent = '✓ ' + file.name;
+                document.getElementById('cvLabel').classList.add('active');
+                showAlert('✓ Lebenslauf-Daten extrahiert', 'success');
+            } catch (error) {
+                showAlert('❌ Fehler beim Lesen des Lebenslaufs', 'error');
+                document.getElementById('cvLabel').textContent = '📎 Lebenslauf wählen oder hier ablegen';
+            }
+        }
+
+        function handleSignatureUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('signatureLabel').textContent = '✓ ' + file.name;
+            document.getElementById('signatureLabel').classList.add('active');
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentSignatureBase64 = e.target.result;
+                const img = document.getElementById('htmlA4SignatureImg');
+                if(img) {
+                    img.src = currentSignatureBase64;
+                    img.style.transform = 'scale(1)';
+                    img.style.transformOrigin = 'left top';
+                    img.style.marginLeft = '0px';
+                    img.style.display = 'block';
+                }
+                document.getElementById('sigControls').style.display = 'block';
+                showAlert('✓ Unterschrift geladen', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert ${type} show`;
+            setTimeout(() => alert.classList.remove('show'), 4000);
+        }
+
+        function saveProfile() {
+            const profileName = prompt('Profilname eingeben (z.B. "Hauptprofil"):');
+            if (!profileName) return;
+
+            const profile = {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                companyStreet: document.getElementById('companyStreet').value,
+                companyCity: document.getElementById('companyCity').value,
+                jobTitle: document.getElementById('jobTitle').value,
+                contact: document.getElementById('contact').value,
+                source: document.getElementById('source').value,
+                stylePrompt: document.getElementById('stylePrompt').value
+            };
+
+            fetch(`/api/profile/${profileName}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(profile)
+            }).then(() => {
+                showAlert(`✓ Profil "${profileName}" gespeichert`, 'success');
+                loadProfiles();
+            });
+        }
+
+        function loadProfiles() {
+            fetch('/api/profiles').then(r => r.json()).then(data => {
+                const select = document.getElementById('profileSelect');
+                select.innerHTML = '<option value="">Neues Profil</option>';
+                data.profiles.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p;
+                    option.textContent = p;
+                    select.appendChild(option);
+                });
+                const pc = document.getElementById('profileCount');
+                if(pc) pc.textContent = data.profiles.length;
+            });
+        }
+
+        function loadProfile() {
+            const profileName = document.getElementById('profileSelect').value;
+            if (!profileName) return;
+
+            fetch(`/api/profile/${profileName}`).then(r => r.json()).then(profile => {
+                document.getElementById('name').value = profile.name || '';
+                document.getElementById('street').value = profile.street || '';
+                document.getElementById('city').value = profile.city || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('company').value = profile.company || '';
+                document.getElementById('companyStreet').value = profile.companyStreet || '';
+                document.getElementById('companyCity').value = profile.companyCity || '';
+                document.getElementById('jobTitle').value = profile.jobTitle || '';
+                document.getElementById('contact').value = profile.contact || '';
+                document.getElementById('source').value = profile.source || '';
+                if(profile.stylePrompt) document.getElementById('stylePrompt').value = profile.stylePrompt;
+                
+                showAlert(`✓ Profil "${profileName}" geladen`, 'success');
+            });
+        }
+
+        function newProfile() {
+            document.getElementById('profileSelect').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('street').value = '';
+            document.getElementById('city').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('company').value = '';
+            document.getElementById('companyStreet').value = '';
+            document.getElementById('companyCity').value = '';
+            document.getElementById('jobTitle').value = '';
+            document.getElementById('contact').value = '';
+            document.getElementById('source').value = '';
+        }
+
+        function deleteProfile() {
+            const profileName = document.getElementById('profileSelect').value;
+            if (!profileName) return;
+
+            if (confirm(`Profil "${profileName}" wirklich löschen?`)) {
+                fetch(`/api/delete-profile/${profileName}`, { method: 'DELETE' }).then(() => {
+                    showAlert(`✓ Profil gelöscht`, 'success');
+                    loadProfiles();
+                    newProfile();
+                });
+            }
+        }
+
+        function fillDebugData() {
+            document.getElementById('name').value = 'Max Mustermann';
+            document.getElementById('street').value = 'Musterstraße 1';
+            document.getElementById('city').value = '12345 Musterstadt';
+            document.getElementById('email').value = 'max.mustermann@example.com';
+            document.getElementById('phone').value = '+49 123 4567890';
+            document.getElementById('company').value = 'TechCorp GmbH';
+            document.getElementById('companyStreet').value = 'Innovationsallee 42';
+            document.getElementById('companyCity').value = '80331 München';
+            document.getElementById('jobTitle').value = 'Senior Software Entwickler';
+            showAlert('✓ Debug-Formular ausgefüllt', 'info');
+        }
+
+        function createDummyCV() {
+            currentCVText = `Lebenslauf Max Mustermann\nAusbildung: B.Sc. Informatik (2015-2018)\nBerufserfahrung: 5 Jahre Fullstack Entwicklung mit Python & JavaScript.`;
+            document.getElementById('cvLabel').textContent = '✓ Debug Lebenslauf generiert';
+            document.getElementById('cvLabel').classList.add('active');
+            showAlert('✓ Debug-Lebenslauf im Hintergrund geladen', 'info');
+        }
+
+        function logDebugInfo() {
+            console.log('--- DEBUG INFO ---');
+            console.log('Layout:', currentLayout);
+            console.log('Font:', currentFont);
+            console.log('CV Text Length:', currentCVText ? currentCVText.length : 0);
+            console.log('Signature loaded:', !!currentSignatureBase64);
+            showAlert('✓ Infos in Konsole geloggt', 'info');
+        }
+
+        function testAPIConnection() {
+            fetch('/api/profiles')
+                .then(r => r.ok ? showAlert('✓ API online', 'success') : showAlert('❌ API Fehlerantwort', 'error'))
+                .catch(err => showAlert('❌ API nicht erreichbar', 'error'));
+        }
+
+        function generatePDFLocal() {
+            // Local fallback generation
+            generateApplication();
+        }
+
+        function generateApplication() {
+            // Validate required fields with specific messages
+            const missingFields = [];
+            
+            const requiredFields = {
+                'name': 'Vollständiger Name',
+                'street': 'Straße',
+                'city': 'Stadt / PLZ',
+                'email': 'E-Mail',
+                'phone': 'Telefon',
+                'company': 'Unternehmensname',
+                'jobTitle': 'Jobtitel',
+            };
+            
+            for (const [fieldId, fieldName] of Object.entries(requiredFields)) {
+                if (!document.getElementById(fieldId).value.trim()) {
+                    missingFields.push(fieldName);
+                }
+            }
+            
+            if (missingFields.length > 0) {
+                const missingText = missingFields.join(', ');
+                showAlert(`❌ Folgende erforderliche Felder sind nicht ausgefüllt: ${missingText}`, 'error');
+                return;
+            }
+
+            document.getElementById('previewCard').style.display = 'flex';
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('previewContent').style.display = 'none';
+
+            const data = {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                company_street: document.getElementById('companyStreet').value,
+                company_city: document.getElementById('companyCity').value,
+                job_title: document.getElementById('jobTitle').value,
+                cv_text: currentCVText,
+                style_prompt: document.getElementById('stylePrompt').value,
+            };
+
+            console.log('=== Bewerbung generieren ===');
+            console.log('Data:', data);
+            
+            fetch('/api/generate-application', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => {
+                console.log('Response Status:', r.status);
+                return r.json();
+            })
+            .then(result => {
+                console.log('Result:', result);
+                
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                currentCoverLetter = result.cover_letter;
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('previewContent').style.display = 'flex';
+                
+                // Update PDF preview with all form data
+                updatePDFPreview(data, currentCoverLetter);
+                
+                generatedCount++;
+                localStorage.setItem('generatedCount', generatedCount);
+                document.getElementById('generatedCount').textContent = generatedCount;
+                
+                showAlert('✓ Bewerbung erfolgreich generiert!', 'success');
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('loading').style.display = 'none';
+                showAlert('❌ Fehler beim Generieren der Bewerbung: ' + err.message, 'error');
+            });
+        }
+
+        function applyLayout(layout, data) {
+            const headerEl = document.getElementById('htmlA4Header');
+            const recEl = document.getElementById('htmlA4Recipient');
+            
+            const n = data.name || '';
+            const e = data.email || '';
+            const p = data.phone || '';
+            const s = data.street || '';
+            const c = data.city || '';
+            
+            const c_name = data.company || '';
+            const c_street = data.company_street || '';
+            const c_city = data.company_city || '';
+            
+            const recipientHTML = `${c_name}<br>${c_street}<br>${c_city}`;
+            
+            if (layout === 'modern') {
+                headerEl.innerHTML = `<div>${n} | ${e} | ${p}</div><div>${s} • ${c}</div><div class="a4-separator"></div>`;
+                headerEl.style.textAlign = 'left';
+                recEl.innerHTML = recipientHTML;
+            } else if (layout === 'minimal') {
+                headerEl.innerHTML = '';
+                recEl.innerHTML = recipientHTML;
+            } else if (layout === 'compact') {
+                headerEl.innerHTML = `<div>${n} • ${s} • ${c}</div><div>${e} | ${p}</div>`;
+                headerEl.style.textAlign = 'left';
+                recEl.innerHTML = `${c_name} | ${c_street} | ${c_city}`;
+            } else {
+                // Classic
+                headerEl.innerHTML = `${n}<br>${s}<br>${c}<br>${e}<br>${p}`;
+                headerEl.style.textAlign = 'right';
+                recEl.innerHTML = recipientHTML;
+            }
+        }
+
+        function updatePDFPreview(formData, letterText) {
+            // Hide hero banner when showing PDF
+            const heroSection = document.getElementById('heroSection');
+            if (heroSection) heroSection.style.display = 'none';
+            
+            const today = new Date().toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            document.getElementById('htmlA4Date').innerHTML = formData.city ? `${formData.city}, ${today}` : today;
+            document.getElementById('htmlA4SignatureName').innerText = formData.name || '';
+            
+            const bodyEl = document.getElementById('htmlA4Body');
+            
+            // Remove typical AI closings so they don't duplicate
+            let cleanLetter = letterText
+                .replace(/[\n\s]*Mit freundlichen Grüßen,?[\s\S]*$/i, '')
+                .replace(/[\n\s]*MfG,?[\s\S]*$/i, '')
+                .replace(/[\n\s]*Grüße,?[\s\S]*$/i, '')
+                .replace(/\[Dein Name\]/g, '')
+                .replace(/\[Your Name\]/g, '')
+                .trim();
+                
+            bodyEl.innerText = cleanLetter; // InnerText keeps linebreaks natural
+            
+            applyLayout(currentLayout, formData);
+            
+            // Show preview HTML block
+            document.getElementById('previewCard').style.display = 'flex';
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('previewContent').style.display = 'flex';
+        }
+
+        function getFormData() {
+            return {
+                name: document.getElementById('name').value,
+                street: document.getElementById('street').value,
+                city: document.getElementById('city').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                company_street: document.getElementById('companyStreet').value,
+                company_city: document.getElementById('companyCity').value,
+            };
+        }
+
+        function changeLayout(layout) {
+            currentLayout = layout;
+            applyLayout(currentLayout, getFormData());
+            
+            // Update greeting based on layout
+            const greetEl = document.getElementById('htmlA4Greeting');
+            if (layout === 'minimal') greetEl.innerText = "Grüße,";
+            else if (layout === 'compact') greetEl.innerText = "MfG,";
+            else greetEl.innerText = "Mit freundlichen Grüßen,";
+            
+            showAlert('✓ Layout sofort geändert: ' + layout, 'success');
+        }
+
+        function changeFont(font) {
+            currentFont = font;
+            const docEl = document.getElementById('htmlA4Document');
+            docEl.className = `a4-preview font-${font.toLowerCase()}`;
+            showAlert('✓ Schriftart geändert: ' + font, 'success');
+        }
+
+        function downloadPDF() {
+            const data = getFormData();
+            
+            // Extract all rich text from the live editable preview!
+            data.custom_header = document.getElementById('htmlA4Header').innerText;
+            data.custom_recipient = document.getElementById('htmlA4Recipient').innerText;
+            data.custom_date = document.getElementById('htmlA4Date').innerText;
+            // subject goes into cover_letter right above it
+            const subj = document.getElementById('htmlA4Subject').innerText;
+            const bodyText = document.getElementById('htmlA4Body').innerText;
+            
+            currentCoverLetter = subj + "\n\n" + bodyText;
+            data.cover_letter = currentCoverLetter;
+            
+            data.custom_greeting = document.getElementById('htmlA4Footer').innerText;
+            data.layout = currentLayout;
+            data.font = currentFont;
+            data.sig_scale = document.getElementById('sigScale') ? document.getElementById('sigScale').value : 1;
+            data.sig_indent = document.getElementById('sigIndent') ? document.getElementById('sigIndent').value : 0;
+            if (currentSignatureBase64) {
+                data.signature_base64 = currentSignatureBase64;
+            }
+
+            console.log('Sending PDF request with data:', data);
+            showAlert('⏳ Generiere PDF-Download...', 'info');
+
+            fetch('/api/generate-pdf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => {
+                if (!r.ok) { return r.json().then(err => { throw err; }); }
+                return r.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Bewerbung.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                showAlert('✓ PDF erfolgreich heruntergeladen', 'success');
+            })
+            .catch(err => {
+                console.error('PDF Download Error:', err);
+                showAlert('❌ PDF-Fehler: ' + (err.error || err.toString()), 'error');
+            });
+        }
+
+        function copyToClipboard() {
+            const bodyText = document.getElementById('htmlA4Body').innerText;
+            navigator.clipboard.writeText(bodyText).then(() => {
+                showAlert('✓ Bewerbungstext in Zwischenablage kopiert', 'success');
+            });
+        }
+
+        // ===== DEBUG FUNCTIONS =====
+        function fillDebugData() {
+            document.getElementById('name').value = 'John Doe';
+            document.getElementById('street').value = '123 Main Street';
+            document.getElementById('city').value = '10115 Berlin';
+            document.getElementById('email').value = 'john.doe@example.com';
+            document.getElementById('phone').value = '+49 123 456789';
+            
+            document.getElementById('company').value = 'Google Germany';
+            document.getElementById('jobTitle').value = 'Software Engineer';
+            document.getElementById('contact').value = 'Herr Müller';
+            document.getElementById('companyStreet').value = 'Poststraße 13';
+            document.getElementById('companyCity').value = '10115 Berlin';
+            document.getElementById('source').value = 'LinkedIn';
+            
+            switchTab('personal-tab');
+            showAlert('✓ Debug-Daten eingefügt', 'success');
+        }
+
+        function createDummyCV() {
+            currentCVText = `JOHN DOE
+123 Main Street, 10115 Berlin
+Tel: +49 123 456789 | Email: john.doe@example.com
+
+BERUFLICHE ERFAHRUNG
+- Software Developer bei Tech Company (2023-2024)
+  * Entwicklung von Web-Anwendungen mit Python und JavaScript
+  * Datenbank-Design und Optimierung
+  * Agile Entwicklungsprozesse (Scrum)
+
+- Tutor für Mathematik bei Levante Nachhilfe (2024-2025)
+  * Unterricht in kleinen Gruppen und Einzelunterricht
+  * Erstellung von Übungsmaterialien
+
+AUSBILDUNG
+- B.Sc. Applied Computer Science, Ruhr-Universität Bochum (2023-2025)
+- B.Sc. Wirtschaftsinformatik, TU Dortmund (2025-present)
+
+FÄHIGKEITEN
+- Programmiersprachen: Python, JavaScript, TypeScript, SQL
+- Frameworks: Flask, React, Django
+- Datenanalyse und Machine Learning
+- Git, Linux, Docker
+- Deutsch (Muttersprache), English (C1)
+
+PROJEKTE
+- Auto Application Generator: Python-Tool zur Automatisierung von Bewerbungen
+- Pricing Engine: ML-Modell für E-Commerce Preisoptimierung
+- Portfolio Website: Astro + React + TailwindCSS`;
+            
+            switchTab('settings-tab');
+            document.getElementById('cvLabel').textContent = '✓ Muster-Lebenslauf.txt';
+            document.getElementById('cvLabel').classList.add('active');
+            showAlert('✓ Muster-Lebenslauf erstellt', 'success');
+        }
+
+        function logDebugInfo() {
+            const debugInfo = {
+                timestamp: new Date().toISOString(),
+                currentCVText: currentCVText ? `${currentCVText.length} chars` : 'leer',
+                currentCoverLetter: currentCoverLetter ? `${currentCoverLetter.length} chars` : 'leer',
+                formData: {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    company: document.getElementById('company').value,
+                    jobTitle: document.getElementById('jobTitle').value,
+                }
+            };
+            
+            console.log('=== DEBUG INFO ===', debugInfo);
+            console.log(JSON.stringify(debugInfo, null, 2));
+            
+            document.getElementById('debugOutput').style.display = 'block';
+            document.getElementById('debugLog').textContent = JSON.stringify(debugInfo, null, 2);
+            showAlert('✓ Debug-Infos in Browser-Konsole (F12) ausgegeben', 'success');
+        }
+
+        function testAPIConnection() {
+            showAlert('🔗 Teste API-Verbindung...', 'success');
+            
+            fetch('/api/profiles')
+                .then(r => r.json())
+                .then(data => {
+                    console.log('API Response:', data);
+                    document.getElementById('debugOutput').style.display = 'block';
+                    document.getElementById('debugLog').textContent = 'API OK!\n' + JSON.stringify(data, null, 2);
+                    showAlert('✓ API-Verbindung funktioniert!', 'success');
+                })
+                .catch(err => {
+                    console.error('API Error:', err);
+                    document.getElementById('debugOutput').style.display = 'block';
+                    document.getElementById('debugLog').textContent = 'API Fehler:\n' + err.toString();
+                    showAlert('❌ API-Fehler: ' + err.toString(), 'error');
+                });
+        }
+
+        async function generatePDFLocal() {
+            try {
+                showAlert('⏳ Generiere HTML Vorschau lokal...', 'info');
+                
+                const formData = getFormData();
+                // Assign some dummy values if clear
+                formData.name = formData.name || 'John Doe';
+                formData.email = formData.email || 'john@example.com';
+                formData.phone = formData.phone || '+49 123 456789';
+                formData.street = formData.street || 'Main Street 1';
+                formData.city = formData.city || '10115 Berlin';
+                formData.company = formData.company || 'Google Germany';
+                formData.company_street = formData.company_street || 'Poststraße 13';
+                formData.company_city = formData.company_city || '10115 Berlin';
+                
+                const editableLetterEl = document.getElementById('editableLetter');
+                const letterText = editableLetterEl ? editableLetterEl.value : 'Hier steht das Anschreiben. Dies ist ein lokaler Test-Text.';
+                currentCoverLetter = letterText;
+                
+                updatePDFPreview(formData, letterText);
+                
+                showAlert('✓ Lokale Vorschau auf HTML-Basis generiert!', 'success');
+            } catch (error) {
+                console.error('Lokale Preview Generation Fehler:', error);
+                showAlert('❌ Fehler: ' + error.message, 'error');
+            }
+        }
+
+        // ===== END DEBUG FUNCTIONS =====
+
+        // Initialize
+        loadProfiles();
+    </script>
+</body>
+</html>
