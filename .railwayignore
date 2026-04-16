@@ -1,0 +1,13 @@
+venv
+__pycache__
+*.pyc
+.git
+.gitignore
+README.md
+DEPLOYMENT.md
+PORTFOLIO.md
+DEPLOY_CHECKLIST.md
+QUICKSTART.md
+README_MODERNIZED.md
+screenshots
+.env
