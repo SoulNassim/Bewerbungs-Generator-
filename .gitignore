@@ -6,7 +6,7 @@ profiles/
 
 # Generated output files
 *.pdf
-*.txt
+# *.txt - ALLOW requirements.txt!
 
 # Python cache
 __pycache__/
