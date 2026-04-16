@@ -2,6 +2,8 @@
 
 A web app that generates German cover letters using GPT-3.5. I built this because writing applications is tedious and I wanted to speed up the process.
 
+**[🚀 Live Demo](https://applify-ai.vercel.app)** | [GitHub](https://github.com/SoulNassim/Bewerbungs-Generator-)
+
 This started as a Python CLI script, evolved into a Tkinter desktop app, and is now a modern Flask web app with a live A4 preview.
 
 ---
@@ -136,6 +138,24 @@ Switch between 4 professional layouts (Classic, Modern, Minimal, Compact) and ch
 3. Upload CV (optional)
 4. Click generate
 5. Edit & download
+
+---
+
+## Deploy to Vercel
+
+The easiest way to get this live:
+
+1. **Fork/Clone this repo**
+2. **Go to [vercel.com](https://vercel.com)** and sign in with GitHub
+3. **Click "Add New" → "Project"**
+4. **Select the `Bewerbungs-Generator-` repo**
+5. **Add environment variable:**
+   - Name: `OPENAI_API_KEY`
+   - Value: Your OpenAI API key
+6. **Click Deploy** ✅
+7. You get a live URL like: `https://applify-xxx.vercel.app`
+
+**That's it.** Vercel auto-deploys when you push to main.
 
 ---
 
