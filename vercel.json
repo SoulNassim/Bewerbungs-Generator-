@@ -4,13 +4,7 @@
   "env": {
     "OPENAI_API_KEY": "@openai_api_key"
   },
-  "public": false,
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.py"
-    }
-  ],
+  "runtime": "python@3.9",
   "functions": {
     "api/index.py": {
       "memory": 1024,
