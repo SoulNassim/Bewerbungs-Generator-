@@ -115,13 +115,17 @@ The whole thing is about 2500 lines of code total.
 
 ## Screenshots
 
-**Landing Page (Firma Tab with Generated Cover Letter)**
+**1. Firma Tab - Form + Live A4 Preview**
 
-Left side: Form fields for company name, job title, contact person  
-Right side: Live A4 preview showing the generated cover letter  
-Bottom: Download and Copy buttons
+Fill in company details on the left, see the generated cover letter on the right in real-time. Everything is fully editable.
 
-The cover letter is fully editable - click anywhere to make changes before downloading.
+![Applify Form and Preview](https://github.com/SoulNassim/Bewerbungs-Generator-/raw/main/screenshots/applify-firma.jpg)
+
+**2. Tools Tab - Layout & Font Options**
+
+Switch between 4 professional layouts (Classic, Modern, Minimal, Compact) and choose from 3 fonts. See changes instantly.
+
+![Applify Tools](https://github.com/SoulNassim/Bewerbungs-Generator-/raw/main/screenshots/applify-tools.jpg)
 
 ---
 
