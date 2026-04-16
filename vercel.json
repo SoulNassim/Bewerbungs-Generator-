@@ -4,7 +4,6 @@
   "env": {
     "OPENAI_API_KEY": "@openai_api_key"
   },
-  "runtime": "python@3.9",
   "functions": {
     "api/index.py": {
       "memory": 1024,
