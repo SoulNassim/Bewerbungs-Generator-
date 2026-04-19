@@ -297,7 +297,11 @@ def create_pdf_from_template(user_data, cover_letter_text, signature_path=None, 
         raise
 
 @app.route('/')
-def index():
+def landing():
+    return render_template('landing.html')
+
+@app.route('/app')
+def app_index():
     return render_template('index.html')
 
 @app.route('/api/profiles', methods=['GET'])

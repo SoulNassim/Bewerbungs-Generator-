@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Applify — KI Bewerbungsgenerator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">Applify</div>
+            <nav>
+                <a href="#features">Features</a>
+                <a href="#pricing">Preise</a>
+                <a href="#solution">Wie es funktioniert</a>
+                <a href="#cta" class="btn btn-primary">Jetzt starten</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Deine Bewerbung in Sekunden</h1>
+            <p>Professionelle Bewerbungsanschreiben, generiert von KI. Keine mühsamen Stunden mehr beim Schreiben.</p>
+            <div class="hero-buttons">
+                <button class="btn btn-primary" onclick="scrollToApp()">Kostenlos testen</button>
+                <button class="btn btn-secondary" onclick="scrollToSection('#problem')">Mehr erfahren</button>
+            </div>
+            <p class="hero-subtext">Kostenlos für die ersten 3 Bewerbungen. Keine Kreditkarte erforderlich.</p>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem" id="problem">
+        <div class="problem-content">
+            <h2>Das Problem mit Bewerbungen</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>⏱️ Zeitaufwändig</h3>
+                    <p>Stundenlang an individuellen Anschreiben feilen, ohne zu wissen, ob sie gut genug sind.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>😓 Stressig</h3>
+                    <p>Jedes Anschreiben muss perfekt sein, aber es fällt schwer, sich zu verkaufen.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>❌ Generisch</h3>
+                    <p>Template-Texte, die nicht wirklich zu dir oder der Stelle passen.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution" id="solution">
+        <h2>Die Lösung: Applify</h2>
+        <div class="solution-grid">
+            <div class="solution-step">
+                <div class="step-icon">1</div>
+                <h3>Daten eingeben</h3>
+                <p>Lade deinen Lebenslauf hoch & Unternehmensdaten eingeben. Takes ~2 minutes.</p>
+            </div>
+            <div class="solution-step">
+                <div class="step-icon">2</div>
+                <h3>KI generiert</h3>
+                <p>Applify erstellt ein personalisiertes, professionelles Anschreiben für dich.</p>
+            </div>
+            <div class="solution-step">
+                <div class="step-icon">3</div>
+                <h3>Bearbeiten & Speichern</h3>
+                <p>Passe es an, wenn du möchtest. Exportiere als PDF oder Word-Datei.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Warum Applify?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Blitzschnell</h3>
+                <p>Generiere professionelle Anschreiben in wenigen Sekunden. Keine zeitaufwändigen Schreibprozesse mehr.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>KI-powered</h3>
+                <p>Basierend auf GPT-3.5 für natürliche, überzeugende Bewerbungen, die deine Qualifikationen hervorheben.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3>Live Vorschau</h3>
+                <p>Sieh dein Anschreiben in Echtzeit im A4-Format. Perfekt für den direkten Druck oder PDF-Export.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Mehrere Layouts</h3>
+                <p>Wähle aus verschiedenen professionellen Designvorlagen, die deinen Stil widerspiegeln.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>Vollständig anpassbar</h3>
+                <p>Bearbeite das generierte Anschreiben direkt, bevor du es speicherst oder versendest.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Deine Daten sind sicher</h3>
+                <p>Keine Speicherung persönlicher Daten. Alles wird sofort nach der Generierung gelöscht.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="pricing-content">
+            <h2 class="section-title">Einfache, transparente Preise</h2>
+            <div class="pricing-cards">
+                <!-- Free Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Kostenlos</h3>
+                    <div class="plan-price">€<span>0</span>/Monat</div>
+                    <p class="plan-description">Perfekt zum Testen und Ausprobieren</p>
+                    <ul class="plan-features">
+                        <li>5 Bewerbungen/Monat</li>
+                        <li>Basis KI-Generierung</li>
+                        <li>Live Vorschau</li>
+                        <li>PDF-Export</li>
+                    </ul>
+                    <button class="btn btn-secondary" onclick="scrollToApp()">Jetzt kostenlos starten</button>
+                </div>
+
+                <!-- Pro Plan (Featured) -->
+                <div class="pricing-card featured">
+                    <h3 class="plan-name">Pro</h3>
+                    <div class="plan-price">€<span>9,99</span>/Monat</div>
+                    <p class="plan-description">Für aktive Jobsucher</p>
+                    <ul class="plan-features">
+                        <li>Unbegrenzte Bewerbungen</li>
+                        <li>Erweiterte KI-Anpassung</li>
+                        <li>3 Layout-Varianten</li>
+                        <li>Prioritäts-Support</li>
+                        <li>Bewerbungs-Historie</li>
+                        <li>Excel-Export</li>
+                    </ul>
+                    <button class="btn btn-primary">Pro Version starten</button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">Enterprise</h3>
+                    <div class="plan-price">€<span>29,99</span>/Monat</div>
+                    <p class="plan-description">Für Teams und Karriere-Coaches</p>
+                    <ul class="plan-features">
+                        <li>Unbegrenzte Bewerbungen</li>
+                        <li>Team-Verwaltung (5 User)</li>
+                        <li>Alle Layouts</li>
+                        <li>24/7 Premium-Support</li>
+                        <li>Analytics-Dashboard</li>
+                        <li>API-Zugang</li>
+                    </ul>
+                    <button class="btn btn-secondary">Enterprise kontaktieren</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <h2>Bereit für deine nächste Bewerbung?</h2>
+        <p>Starte kostenlos und erstelle dein erstes Bewerbungsanschreiben in Sekunden.</p>
+        <button class="btn btn-primary" onclick="scrollToApp()">Jetzt kostenlos testen</button>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Preise</a>
+                <a href="#">Datenschutz</a>
+                <a href="#">AGB</a>
+                <a href="#">Kontakt</a>
+            </div>
+            <p>&copy; 2026 Applify. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToApp() {
+            // This would redirect to the actual app
+            window.location.href = '/app';
+        }
+
+        function scrollToSection(selector) {
+            const element = document.querySelector(selector);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+</body>
+</html>
