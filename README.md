@@ -1,8 +1,8 @@
-# Applify - German Cover Letter Generator
+# Applify - AI German Cover Letter Generator
 
 **[🚀 Live Demo](https://bewerbungs-generator-production-cbc5.up.railway.app)** | [GitHub](https://github.com/SoulNassim/Bewerbungs-Generator-)
 
-A web app that generates German cover letters using GPT-3.5. I built this because writing applications is tedious and I wanted to speed up the process.
+A Flask web app that generates German cover letters using GPT-3.5. I built this because writing applications is tedious and I wanted to speed up the process.
 
 This started as a Python CLI script, evolved into a Tkinter desktop app, and is now a modern Flask web app with a live A4 preview.
 
