@@ -1,0 +1,201 @@
+/* Dark Theme Override for App Page */
+
+body {
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+}
+
+header {
+    background: #000000 !important;
+    box-shadow: 0 1px 0 #2a2a2a !important;
+    text-shadow: none !important;
+}
+
+header h1 {
+    color: #ffffff !important;
+    text-shadow: none !important;
+}
+
+.card {
+    background: #1a1a1a !important;
+    border-radius: 0 !important;
+    border: 1px solid #2a2a2a !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
+
+.card h2 {
+    color: #ffffff !important;
+}
+
+label {
+    color: #ffffff !important;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+    border: 1px solid #2a2a2a !important;
+    border-radius: 0 !important;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+textarea::placeholder {
+    color: #666666 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    background: #0f0f0f !important;
+    border: 1px solid #ffffff !important;
+    outline: none !important;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+button {
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+    font-weight: 500 !important;
+}
+
+button:active {
+    transform: scale(0.98) !important;
+}
+
+.btn-primary {
+    background: #e0e0e0 !important;
+    color: #000000 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    font-size: 1em !important;
+}
+
+.btn-primary:hover {
+    background: #cccccc !important;
+    color: #000000 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-2px) !important;
+}
+
+.btn-secondary {
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+    border: 1.5px solid #ffffff !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    font-weight: 600 !important;
+}
+
+.btn-secondary:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border-color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15) !important;
+}
+
+.tabs {
+    border-bottom: 1px solid #2a2a2a !important;
+}
+
+.tab {
+    color: #666666 !important;
+    border-bottom: 2px solid transparent !important;
+}
+
+.tab.active {
+    color: #ffffff !important;
+    border-bottom-color: #ffffff !important;
+}
+
+.a4-wrapper {
+    background: #0a0a0a !important;
+    border-radius: 0 !important;
+}
+
+.a4-preview {
+    box-shadow: none !important;
+    border: 1px solid #2a2a2a !important;
+    border-radius: 0 !important;
+}
+
+/* Hero section override */
+#heroSection {
+    background: transparent !important;
+}
+
+#heroSection h2 {
+    color: #ffffff !important;
+}
+
+#heroSection p {
+    color: #cccccc !important;
+}
+
+.feature-card {
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #ffffff !important;
+}
+
+.feature-card h3 {
+    color: #ffffff !important;
+}
+
+.feature-card p {
+    color: #cccccc !important;
+}
+
+.stat-box {
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #ffffff !important;
+}
+
+.stat-box .number {
+    color: #ffffff !important;
+}
+
+.stat-box .label {
+    color: #999999 !important;
+}
+
+.alert {
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    color: #ffffff !important;
+    border-radius: 0 !important;
+}
+
+.file-input-label {
+    border: 1px dashed #2a2a2a !important;
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+}
+
+.file-input-label:hover {
+    border-color: #ffffff !important;
+}
+
+.profile-selector {
+    display: flex;
+    gap: 6px;
+}
+
+select {
+    background: #0f0f0f !important;
+    color: #ffffff !important;
+}
